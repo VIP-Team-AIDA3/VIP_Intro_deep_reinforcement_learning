@@ -21,10 +21,17 @@
  - Definition of state-value function versus action-value function
 
  ## TUTORIAL THREE - A: DYNAMIC PROGRAMMING - Policy Iteration
-
-
+ 
  ## TUTORIAL THREE - B: DYNAMIC PROGRAMMING Value Iteration and Generalized Policy Iteration
  
  ## TUTORIAL FOUR: Monte Carlo 
 
- - 
+ ## TUTORIAL FIVE: SARSA
+
+ - Intro to the control problem and TD learning
+ - Control requires estimation of the action-value function: q(s|a)
+ - SARSA algorithm
+ - SARSA is on-policy
+ 
+ ## TUTORIAL SIX: Q-Learning
+ 
