@@ -116,8 +116,29 @@ The **action-value function**, $q_\pi(s,a)$, gives the expected return of starti
 
 $$q_\pi(s,a) = \mathbb{E}_\pi[G_t \mid S_t = s, A_t = a]$$
 
-The distinction matters because $v_\pi(s)$ tells the agent how good a *state* is under its current policy, while $q_\pi(s,a)$ tells the agent how good a specific *action* is in that state — which is what's actually needed to decide what to do next. Tutorial Three shows how these value functions can be computed and improved iteratively using Dynamic Programming.
+The distinction matters because $v_\pi(s)$ tells the agent how good a *state* is under its current policy, while $q_\pi(s,a)$ tells the agent how good a specific *action* is in that state — which is what's actually needed to decide what to do next.
+
+The two value functions are not independent — each can be expressed in terms of the other. $v_\pi(s)$ is the $\pi$-weighted average of $q_\pi(s,a)$ over every action available in $s$:
+
+$$v_\pi(s) = \sum_a \pi(a \mid s)\, q_\pi(s,a)$$
+
+<p align="center">
+  <img src="Figures/VpiQpiRelation.png" width="60%"/>
+  <figcaption align="center">v_π(s) as the π-weighted average of q_π(s,a) (Sutton &amp; Barto, 2018).</figcaption>
+</p>
+
+And $q_\pi(s,a)$ is the expected immediate reward plus the discounted value of whatever state the environment transitions to:
+
+$$q_\pi(s,a) = \sum_{s', r} p(s', r \mid s, a) \left[ r + \gamma v_\pi(s') \right]$$
+
+<p align="center">
+  <img src="Figures/QpiVpiRelation.png" width="60%"/>
+  <figcaption align="center">q_π(s,a) in terms of the expected reward and v_π(s') (Sutton &amp; Barto, 2018).</figcaption>
+</p>
+
+Tutorial Three shows how these value functions can be computed and improved iteratively using Dynamic Programming.
 
 ## Sources
 
-Morales, M. (2020). *Grokking deep reinforcement learning*. Manning Publications.
+* **Sutton, R. S., & Barto, A. G.** (2018). *Reinforcement Learning: An Introduction* (2nd ed.). MIT Press. Chapter 3: Finite Markov Decision Processes.
+* **Morales, M.** (2020). *Grokking Deep Reinforcement Learning*. Manning Publications.

@@ -80,6 +80,8 @@ While both methods converge to $v_\pi(s)$, First-Visit MC is widely studied due 
 >      * **If** $S_t$ does not appear in $S_0, S_1, \dots, S_{t-1}$ (**First-Visit check**):
 >        * Append $G$ to $\text{Returns}(S_t)$
 >        * $V(S_t) \gets \text{average}(\text{Returns}(S_t))$
+>
+> *(Sutton & Barto, 2018)*
 
 ---
 
@@ -108,6 +110,8 @@ The estimation machinery mirrors state prediction exactly, replacing visits to s
 >      * **If** pair $(S_t, A_t)$ does not appear in $(S_0, A_0), \dots, (S_{t-1}, A_{t-1})$ (**First-Visit check**):
 >        * Append $G$ to $\text{Returns}(S_t, A_t)$
 >        * $Q(S_t, A_t) \gets \text{average}(\text{Returns}(S_t, A_t))$
+>
+> *(Sutton & Barto, 2018)*
 
 Because the state-action space $\mathcal{S} \times \mathcal{A}$ is generally much larger than the state space $\mathcal{S}$ alone (every state now has $|\mathcal{A}(s)|$ entries to fill in, rather than one), reliably estimating $q_\pi$ for every pair typically requires substantially more episodes than estimating $v_\pi$ for every state.
 
@@ -138,6 +142,8 @@ To satisfy the requirement that all $(s, a)$ pairs are visited infinitely often,
 >        * Append $G$ to $\text{Returns}(S_t, A_t)$
 >        * $Q(S_t, A_t) \gets \text{average}(\text{Returns}(S_t, A_t))$
 >        * $\pi(S_t) \gets \arg\max_a Q(S_t, a)$
+>
+> *(Sutton & Barto, 2018)*
 
 ---
 

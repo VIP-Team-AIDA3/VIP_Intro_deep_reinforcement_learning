@@ -14,7 +14,7 @@ This combination removes MC's main restriction. Because MC only updates $V(s)$ o
 
 Recall the constant-$\alpha$ Monte Carlo update from Tutorial 4, which must wait until an episode ends to obtain the actual return $G_t$ as its update target:
 
-$$V(S_t)_{\pi} \gets V(S_t) + \alpha \left[ G_t - V(S_t) \right]$$
+$$V(S_t) \gets V(S_t) + \alpha \left[ G_t - V(S_t) \right]$$
 
 **TD(0)**, or **one-step TD**, replaces $G_t$ with a target that can be computed immediately after a single transition — the reward just received, plus the discounted current estimate of the value of the next state:
 
@@ -24,7 +24,11 @@ The bracketed quantity is called the **TD error**:
 
 $$\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$$
 
-$\delta_t$ measures the discrepancy between $V(S_t)$'s current estimate and a better estimate formed from one real sample of what actually happened next. Notice the target $R_{t+1} + \gamma V(S_{t+1})$ is exactly the right-hand side of the Bellman equation for $v_\pi$, but with the *true* expectation over $p(s', r \mid s, a)$ replaced by a *single sampled* transition, and the *true* $v_\pi(S_{t+1})$ replaced by the *current estimate* $V(S_{t+1})$. This makes the target biased (it depends on a possibly-inaccurate $V(S_{t+1})$), but it has far lower variance than a full Monte Carlo return, since it depends on only one random reward and one random transition rather than the entire remaining trajectory.
+$\delta_t$ measures the discrepancy between $V(S_t)$'s current estimate and a better estimate formed from one real sample of what actually happened next. Notice the target $R_{t+1} + \gamma V(S_{t+1})$ is exactly the right-hand side of the Bellman equation for $v_\pi$:
+
+$$v_\pi(s) = \mathbb{E}_\pi\left[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t = s\right]$$
+
+but with the *true* expectation over $p(s', r \mid s, a)$ replaced by a *single sampled* transition, and the *true* $v_\pi(S_{t+1})$ replaced by the *current estimate* $V(S_{t+1})$. This makes the target biased (it depends on a possibly-inaccurate $V(S_{t+1})$), but it has far lower variance than a full Monte Carlo return, since it depends on only one random reward and one random transition rather than the entire remaining trajectory.
 
 #### Tabular TD(0) Algorithm
 
@@ -38,6 +42,8 @@ $\delta_t$ measures the discrepancy between $V(S_t)$'s current estimate and a be
 >      * $V(S) \gets V(S) + \alpha \left[ R + \gamma V(S') - V(S) \right]$
 >      * $S \gets S'$
 >    * **until** $S$ is terminal
+>
+> *(Sutton & Barto, 2018)*
 
 Unlike the MC algorithm in Tutorial 4, there is no need to generate an entire episode trace or walk back through it — TD(0) updates $V(S)$ immediately at every step, using only quantities available at that moment.
 
@@ -62,6 +68,12 @@ Because TD targets bootstrap from single-step samples rather than full returns, 
 As established in Tutorial 4, a model-free agent cannot construct a policy from $v_\pi(s)$ alone, since without $p(s', r \mid s, a)$ it cannot look one step ahead to see which action leads to which state. Control therefore requires estimating **action values** $q_\pi(s, a)$ directly, exactly as it did for Monte Carlo control.
 
 TD control fits into the same **Generalized Policy Iteration (GPI)** pattern used in Tutorial 4: alternate between a policy-evaluation step, which updates $Q$ towards $q_\pi$, and a policy-improvement step, which greedifies (or $\varepsilon$-greedifies) $\pi$ with respect to the updated $Q$. What changes is *how* the evaluation step is performed — one-step TD updates to $Q$ in place of full episode returns.
+
+Just as $v_\pi$ has a Bellman equation, so does $q_\pi$, and it is this equation that the TD evaluation step is sampling:
+
+$$q_\pi(s,a) = \mathbb{E}_\pi\left[R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1}) \mid S_t=s,\ A_t=a\right]$$
+
+Here the expectation over $A_{t+1}$ is taken with respect to $\pi$ — the same policy generating behavior — which is precisely what SARSA's update below approximates with a single sampled transition.
 
 This raises a question MC control did not have to address as sharply: when bootstrapping off of $Q(S', A')$, *which* action $A'$ should be used in the target? Answering this differently gives rise to two distinct families of TD control methods — **on-policy** methods, covered below as SARSA, and **off-policy** methods, covered in Tutorial 6 as Q-Learning.
 
@@ -88,6 +100,8 @@ The crucial detail is where $A_{t+1}$ comes from: it is the action *actually sel
 >      * $Q(S, A) \gets Q(S, A) + \alpha \left[ R + \gamma Q(S', A') - Q(S, A) \right]$
 >      * $S \gets S'$; $A \gets A'$
 >    * **until** $S$ is terminal
+>
+> *(Sutton & Barto, 2018)*
 
 SARSA converges to the optimal action-value function $q_*$ (with probability 1) provided all state-action pairs continue to be visited and the policy converges in the limit to the greedy policy — a condition known as **GLIE** (Greedy in the Limit with Infinite Exploration), typically achieved by decaying $\varepsilon$ toward zero over training (e.g. $\varepsilon_t = 1/t$).
 

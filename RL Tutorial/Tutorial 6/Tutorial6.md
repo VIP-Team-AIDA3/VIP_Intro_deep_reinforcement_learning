@@ -12,6 +12,14 @@ Tutorial 5 introduced Temporal-Difference (TD) learning and its first control me
 
 **A common point of confusion:** if Q-Learning's target always uses the greedy $\max_a$ action, what is the exploratory ($\varepsilon$-greedy) behavior policy actually *for*? The two policies are doing two different jobs around a *single* $Q$-table, not maintaining separate value functions. The behavior policy only decides *which* $(S_t, A_t)$ pair gets experienced and therefore updated at all — it supplies coverage, so that actions which currently look bad still eventually get tried. It has no say in what value that update moves toward. The $\max_a Q(S_{t+1}, a)$ term is purely hypothetical: it credits landing in $S_{t+1}$ as if the *best* action will be taken from there on, even though the agent's next real action (chosen again by the exploratory behavior policy) might in fact be something else entirely. That is precisely why Q-Learning converges to $q_*(s,a)$ — "the return from taking action $a$ in state $s$, then playing optimally forever after" — regardless of how exploratory the behavior generating the data was.
 
+**A note on notation:** earlier tutorials write $v_\pi$ and $q_\pi$ for the *true* value of a fixed policy $\pi$, reserving the subscript to mean "the return if we follow $\pi$ thereafter." Because Q-Learning's target is never the value of the policy currently generating behavior, this tutorial's $Q$ is never written as $q_\pi$ — its estimation target is the policy-independent $q_*$, so it's written using $Q$ or $q_*$ only. The contrast is clearest by placing the two Bellman equations side by side. SARSA samples the Bellman equation for $q_\pi$ (Tutorial 5), whose expectation over the next action runs over $\pi$:
+
+$$q_\pi(s,a) = \mathbb{E}_\pi\left[R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1}) \mid S_t=s,\ A_t=a\right]$$
+
+Q-Learning instead samples the **Bellman optimality equation** for $q_*$, which has no $\pi$ in it at all — the $\max_{a'}$ replaces the $\pi$-weighted average:
+
+$$q_*(s,a) = \mathbb{E}\left[R_{t+1} + \gamma \max_{a'} q_*(S_{t+1}, a') \mid S_t=s,\ A_t=a\right]$$
+
 ---
 
 ### Q-Learning: Off-Policy TD Control
@@ -43,6 +51,8 @@ Because Q-Learning already bootstraps directly off $\max_a Q(S',a)$, it approxim
 >      * $Q(S, A) \gets Q(S, A) + \alpha \left[ R + \gamma \max_a Q(S', a) - Q(S, A) \right]$
 >      * $S \gets S'$
 >    * **until** $S$ is terminal
+>
+> *(Sutton & Barto, 2018)*
 
 Notice the structural difference from SARSA's pseudocode: Q-Learning chooses $A$ *inside* the step loop rather than carrying it over from the previous iteration, and there is no need to pre-select $A'$ before computing the update — the target uses $\max_a Q(S', a)$ directly, an action that need never actually be taken.
 
